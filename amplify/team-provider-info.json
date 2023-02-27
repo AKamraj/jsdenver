@@ -10,6 +10,11 @@
       "StackName": "amplify-joyshare-staging-235449",
       "StackId": "arn:aws:cloudformation:us-east-1:022502076575:stack/amplify-joyshare-staging-235449/f4bdd380-b630-11ed-997b-0eabb997dded",
       "AmplifyAppId": "d1vti2qr8639bt"
+    },
+    "categories": {
+      "auth": {
+        "joyshare": {}
+      }
     }
   }
 }

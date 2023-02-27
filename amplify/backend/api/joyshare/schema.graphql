@@ -7,4 +7,4 @@ type User @model @auth(rules: [{allow: public}]) {
   dailyKarmaAllotted: String
   lastKarmaAllottedTime: String
   friends: [AWSJSON]
-}
+} 
