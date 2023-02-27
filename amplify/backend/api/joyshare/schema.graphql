@@ -1,0 +1,10 @@
+type User @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  phoneNumber: String!
+  walletAddress: String
+  dailyKarmaAllotted: String
+  lastKarmaAllottedTime: String
+  friends: [AWSJSON]
+}

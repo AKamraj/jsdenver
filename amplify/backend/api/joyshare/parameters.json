@@ -1,0 +1,6 @@
+{
+  "AppSyncApiName": "joyshare",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthModeLastUpdated": "2023-02-27T00:24:36.978Z"
+}

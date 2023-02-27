@@ -1,0 +1,15 @@
+{
+  "staging": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-joyshare-staging-235449-authRole",
+      "UnauthRoleArn": "arn:aws:iam::022502076575:role/amplify-joyshare-staging-235449-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::022502076575:role/amplify-joyshare-staging-235449-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-joyshare-staging-235449-deployment",
+      "UnauthRoleName": "amplify-joyshare-staging-235449-unauthRole",
+      "StackName": "amplify-joyshare-staging-235449",
+      "StackId": "arn:aws:cloudformation:us-east-1:022502076575:stack/amplify-joyshare-staging-235449/f4bdd380-b630-11ed-997b-0eabb997dded",
+      "AmplifyAppId": "d1vti2qr8639bt"
+    }
+  }
+}
