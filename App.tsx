@@ -5,75 +5,48 @@
  * @format
  */
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import React, {useEffect} from 'react';
 import {
   SafeAreaView,
-  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
   useColorScheme,
-  View,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-import {DataStore} from '@aws-amplify/datastore';
-import {User} from './src/models';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {Magic} from '@magic-sdk/react-native-bare';
+import {getBalance, createWallet} from 'react-native-web3-wallet';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}
-        onPress={async () => {
-          await DataStore.save(
-            new User({
-              firstName: 'Lorem ipsum dolor sit amet',
-              lastName: 'Lorem ipsum dolor sit amet',
-              phoneNumber: 'Lorem ipsum dolor sit amet',
-              walletAddress: 'Lorem ipsum dolor sit amet',
-              dailyKarmaAllotted: 'Lorem ipsum dolor sit amet',
-              lastKarmaAllottedTime: 'Lorem ipsum dolor sit amet',
-              friends: [],
-            }),
-          );
-        }}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+const magicClient = new Magic('pk_live_8EBF58706F6D8538'); // ✨
 
 function App(): JSX.Element {
+  useEffect(() => {
+    (async () => {
+      if (await magicClient.user.isLoggedIn()) {
+        const {publicAddress, issuer, phoneNumber} =
+          await magicClient.user.getMetadata();
+        console.log(publicAddress, issuer, phoneNumber);
+        if (publicAddress && issuer) {
+          const balanceInWei = await getBalance(
+            'https://polygon-mumbai.g.alchemy.com/v2/-CuvhStLwPmHVIZ4SlJrmJ2ZLploxpJd',
+            publicAddress,
+          );
+          console.log('balanceInWei', balanceInWei);
+          const time = Date.now();
+          const wallet = await createWallet('1');
+          console.log(
+            `${Math.floor((Date.now() - time) / 1000)} seconds`,
+            wallet,
+          );
+        }
+      }
+    })();
+  });
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
+    height: '100%',
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
@@ -83,30 +56,34 @@ function App(): JSX.Element {
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
+
+      <Text
+        style={[
+          styles.sectionDescription,
+          {
+            color: isDarkMode ? Colors.light : Colors.dark,
+          },
+        ]}>
+        Test===
+      </Text>
+      {/* Remember to render the `Relayer` component into your app! */}
+      <magicClient.Relayer />
+
+      <Text
+        style={[
+          styles.sectionDescription,
+          {
+            color: isDarkMode ? Colors.light : Colors.dark,
+          },
+        ]}
+        onPress={async () => {
+          const DID = await magicClient.auth.loginWithSMS({
+            phoneNumber: '+14258909609',
+          });
+          console.log(DID);
+        }}>
+        Test asdlkfjkasdljf
+      </Text>
     </SafeAreaView>
   );
 }
