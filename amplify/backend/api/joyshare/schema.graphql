@@ -1,3 +1,34 @@
+type Comment @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  sender: ID
+  commentedAt: AWSDateTime
+  content: String
+}
+
+type Reactions @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  sender: ID
+  reactedAt: AWSDateTime
+}
+
+type Karma @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  sender: ID!
+  receiver: ID!
+  message: String!
+  type: String!
+  tokenId: String
+  state: String
+  sentAt: String
+  respondedAt: AWSDateTime
+  minted: Boolean
+  batchId: String
+  status: String
+  expiresAt: AWSDateTime
+  comments: [ID]
+  reactions: [ID]
+}
+
 type User @model @auth(rules: [{allow: public}]) {
   id: ID!
   firstName: String!
@@ -7,4 +38,5 @@ type User @model @auth(rules: [{allow: public}]) {
   dailyKarmaAllotted: String
   lastKarmaAllottedTime: String
   friends: [AWSJSON]
-} 
+}
+ 
