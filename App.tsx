@@ -10,7 +10,6 @@ import {
   SafeAreaView,
   StatusBar,
   StyleSheet,
-  Text,
   useColorScheme,
 } from 'react-native';
 
@@ -20,7 +19,7 @@ import '@ethersproject/shims';
 import {Magic} from '@magic-sdk/react-native-bare';
 import {getBalance} from 'react-native-web3-wallet';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
-import {CryptoCards, Button} from '@web3uikit/core';
+import {View, TextField, Text, Button} from 'react-native-ui-lib';
 
 const m = new Magic('pk_live_8EBF58706F6D8538', {network: 'goerli'}); // ✨
 
@@ -125,6 +124,17 @@ function App(): JSX.Element {
           }}>
           Test asdlkfjkasdljf
         </Text>
+        <View flex paddingH-25 paddingT-120>
+          <Text blue50 text20>
+            Welcome
+          </Text>
+          <TextField text50 placeholder="username" grey10 />
+          <TextField text50 placeholder="password" secureTextEntry grey10 />
+          <View marginT-100 center>
+            <Button text70 white background-orange30 label="Login" />
+            <Button link text70 orange30 label="Sign Up" marginT-20 />
+          </View>
+        </View>
       </SafeAreaView>
     </SafeAreaProvider>
   );
