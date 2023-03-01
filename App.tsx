@@ -15,17 +15,54 @@ import {
 } from 'react-native';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
+import 'react-native-get-random-values';
+import '@ethersproject/shims';
 import {Magic} from '@magic-sdk/react-native-bare';
-import {getBalance, createWallet} from 'react-native-web3-wallet';
+import {getBalance} from 'react-native-web3-wallet';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
+import {CryptoCards, Button} from '@web3uikit/core';
 
-const magicClient = new Magic('pk_live_8EBF58706F6D8538'); // ✨
+const m = new Magic('pk_live_8EBF58706F6D8538', {network: 'goerli'}); // ✨
+
+export const signTypedDataV3Payload = {
+  types: {
+    EIP712Domain: [
+      {
+        name: 'name',
+        type: 'string',
+      },
+      {
+        name: 'version',
+        type: 'string',
+      },
+      {
+        name: 'verifyingContract',
+        type: 'address',
+      },
+    ],
+    Greeting: [
+      {
+        name: 'contents',
+        type: 'string',
+      },
+    ],
+  },
+  primaryType: 'Greeting',
+  domain: {
+    name: 'Magic',
+    version: '1',
+    verifyingContract: '0xE0cef4417a772512E6C95cEf366403839b0D6D6D',
+  },
+  message: {
+    contents: 'Hello, from Magic!',
+  },
+};
 
 function App(): JSX.Element {
   useEffect(() => {
     (async () => {
-      if (await magicClient.user.isLoggedIn()) {
-        const {publicAddress, issuer, phoneNumber} =
-          await magicClient.user.getMetadata();
+      if (await m.user.isLoggedIn()) {
+        const {publicAddress, issuer, phoneNumber} = await m.user.getMetadata();
         console.log(publicAddress, issuer, phoneNumber);
         if (publicAddress && issuer) {
           const balanceInWei = await getBalance(
@@ -33,12 +70,6 @@ function App(): JSX.Element {
             publicAddress,
           );
           console.log('balanceInWei', balanceInWei);
-          const time = Date.now();
-          const wallet = await createWallet('1');
-          console.log(
-            `${Math.floor((Date.now() - time) / 1000)} seconds`,
-            wallet,
-          );
         }
       }
     })();
@@ -51,40 +82,51 @@ function App(): JSX.Element {
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
+    <SafeAreaProvider>
+      <SafeAreaView style={backgroundStyle}>
+        <StatusBar
+          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+          backgroundColor={backgroundStyle.backgroundColor}
+        />
 
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        Test===
-      </Text>
-      {/* Remember to render the `Relayer` component into your app! */}
-      <magicClient.Relayer />
+        <Text
+          style={[
+            styles.sectionDescription,
+            {
+              color: isDarkMode ? Colors.light : Colors.dark,
+            },
+          ]}>
+          Test===
+        </Text>
+        {/* Remember to render the `Relayer` component into your app! */}
+        <m.Relayer />
 
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}
-        onPress={async () => {
-          const DID = await magicClient.auth.loginWithSMS({
-            phoneNumber: '+14258909609',
-          });
-          console.log(DID);
-        }}>
-        Test asdlkfjkasdljf
-      </Text>
-    </SafeAreaView>
+        <Text
+          style={[
+            styles.sectionDescription,
+            {
+              color: isDarkMode ? Colors.light : Colors.dark,
+            },
+          ]}
+          onPress={async () => {
+            const {publicAddress, issuer, phoneNumber} =
+              await m.user.getMetadata();
+            const params = [publicAddress, signTypedDataV3Payload];
+            const method = 'eth_signTypedData_v3';
+            const signature = await m.rpcProvider.request({
+              method,
+              params,
+            });
+            console.log('signature', signature);
+            const DID = await m.auth.loginWithSMS({
+              phoneNumber: '+14258909609',
+            });
+            console.log(DID);
+          }}>
+          Test asdlkfjkasdljf
+        </Text>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 
