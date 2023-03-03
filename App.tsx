@@ -17,43 +17,38 @@ import {Colors} from 'react-native/Libraries/NewAppScreen';
 import 'react-native-get-random-values';
 import '@ethersproject/shims';
 import {Magic} from '@magic-sdk/react-native-bare';
+import {ethers} from 'ethers';
 import {getBalance} from 'react-native-web3-wallet';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {View, TextField, Text, Button} from 'react-native-ui-lib';
+import {
+  recoverTypedSignature,
+  SignTypedDataVersion,
+} from '@metamask/eth-sig-util';
 
-const m = new Magic('pk_live_8EBF58706F6D8538', {network: 'goerli'}); // ✨
+const m = new Magic('pk_live_8EBF58706F6D8538'); // ✨
 
-export const signTypedDataV3Payload = {
-  types: {
-    EIP712Domain: [
-      {
-        name: 'name',
-        type: 'string',
-      },
-      {
-        name: 'version',
-        type: 'string',
-      },
-      {
-        name: 'verifyingContract',
-        type: 'address',
-      },
-    ],
-    Greeting: [
-      {
-        name: 'contents',
-        type: 'string',
-      },
-    ],
-  },
-  primaryType: 'Greeting',
+export const signTypedDataV4Payload = {
   domain: {
-    name: 'Magic',
+    chainId: 80001,
+    name: 'Joyshare',
+    verifyingContract: '0xcecd9f1d22cB7f5572348F336617d31919d54A57',
     version: '1',
-    verifyingContract: '0xE0cef4417a772512E6C95cEf366403839b0D6D6D',
   },
   message: {
-    contents: 'Hello, from Magic!',
+    recipient: '0x71633bE32E07dB4a645CE85418D64484B39AB692',
+    id: 1,
+    amount: 1,
+    approvalExpiry: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
+  },
+  primaryType: 'Greeting',
+  types: {
+    Greeting: [
+      {name: 'recipient', type: 'string'},
+      {name: 'id', type: 'uint256'},
+      {name: 'amount', type: 'uint256'},
+      {name: 'approvalExpiry', type: 'uint256'},
+    ],
   },
 };
 
@@ -62,7 +57,22 @@ function App(): JSX.Element {
     (async () => {
       if (await m.user.isLoggedIn()) {
         const {publicAddress, issuer, phoneNumber} = await m.user.getMetadata();
-        console.log(publicAddress, issuer, phoneNumber);
+        const params = [publicAddress, signTypedDataV4Payload];
+        const method = 'eth_signTypedData_v4';
+        const signature = await m.rpcProvider.request({
+          method,
+          params,
+        });
+        console.log('payload', signTypedDataV4Payload);
+        console.log('signature', signature);
+        const result = await ethers.utils.splitSignature(signature);
+        console.log('v,r,s', result);
+        console.log(
+          publicAddress,
+          issuer,
+          phoneNumber,
+          await m.user.getIdToken(),
+        );
         if (publicAddress && issuer) {
           const balanceInWei = await getBalance(
             'https://polygon-mumbai.g.alchemy.com/v2/-CuvhStLwPmHVIZ4SlJrmJ2ZLploxpJd',
@@ -108,19 +118,20 @@ function App(): JSX.Element {
             },
           ]}
           onPress={async () => {
-            const {publicAddress, issuer, phoneNumber} =
-              await m.user.getMetadata();
-            const params = [publicAddress, signTypedDataV3Payload];
-            const method = 'eth_signTypedData_v3';
-            const signature = await m.rpcProvider.request({
-              method,
-              params,
+            /*
+            const recoveredAddress = recoverTypedSignature({
+              // @ts-ignore
+              data: signTypedDataV4Payload,
+              signature,
+              version: SignTypedDataVersion.V4,
             });
-            console.log('signature', signature);
+            console.log('publicAddress', publicAddress);
+            console.log('recoveredAddress', recoveredAddress);
             const DID = await m.auth.loginWithSMS({
               phoneNumber: '+14258909609',
             });
-            console.log(DID);
+            console.log('token', DID);
+            */
           }}>
           Test asdlkfjkasdljf
         </Text>
