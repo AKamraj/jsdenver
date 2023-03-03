@@ -1,6 +1,6 @@
 # Contract Deployment
 To deploy the contract:
-1. Run `npm install --save-dev hardhat @nomiclabs/hardhat-ethers @nomiclabs/hardhat-etherscan 'ethers@^5.0.0'`
+1. Run `npm install --save-dev hardhat @nomiclabs/hardhat-ethers @nomiclabs/hardhat-etherscan 'ethers@^5.0.0' @openzeppelin/contracts`
 2. Run `cp .env.example .env`
 3. Populate `.env` with required values 
 4. Run `npx hardhat compile`
